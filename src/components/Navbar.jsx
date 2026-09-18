@@ -9,7 +9,7 @@ const LINKS = [
   { label: "Contact", id: "contact" },
 ];
 
-const NAV_OFFSET = 88; // navbar height + breathing room
+const NAV_OFFSET = 88;
 
 /* -------------------------------- Navbar ------------------------------------ */
 
@@ -20,7 +20,7 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
-  /* Scroll: shrink + progress bar + scroll-spy */
+  /* Scroll: shrink + progress + scroll-spy */
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;
@@ -43,7 +43,7 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* Mobile menu: body scroll lock + ESC close */
+  /* Mobile menu: scroll lock + ESC */
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     const onKey = (e) => e.key === "Escape" && setOpen(false);
@@ -54,7 +54,7 @@ const Navbar = () => {
     };
   }, [open]);
 
-  /* ✅ Smooth scroll with navbar offset */
+  /* Smooth scroll with offset */
   const goTo = (e, id) => {
     e.preventDefault();
     setOpen(false);
@@ -70,7 +70,6 @@ const Navbar = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  /* CTA click → modal */
   const openModal = (e) => {
     e?.preventDefault();
     setOpen(false);
@@ -90,13 +89,13 @@ const Navbar = () => {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b ${
           scrolled
-            ? "border-neutral-800/80 bg-neutral-950/90 shadow-2xl shadow-black/80 backdrop-blur-2xl"
-            : "border-transparent bg-transparent"
+            ? "border-rose-500/15 bg-gradient-to-b from-[#16121C]/95 to-[#100D15]/95 shadow-2xl shadow-rose-950/20 backdrop-blur-2xl"
+            : "border-transparent bg-gradient-to-b from-[#16121C]/60 to-transparent"
         }`}
       >
         {/* Top hairline glow */}
         <div
-          className={`absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-rose-500/50 to-transparent transition-opacity duration-700 ${
+          className={`absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-rose-400/70 to-transparent transition-opacity duration-700 ${
             scrolled ? "opacity-100" : "opacity-0"
           }`}
         />
@@ -107,8 +106,8 @@ const Navbar = () => {
           style={{ width: `${progress}%` }}
         />
 
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 transition-all duration-500 sm:px-8">
-          {/* ------------------------------ LOGO ------------------------------ */}
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 sm:px-8">
+          {/* LOGO */}
           <a
             href="#top"
             onClick={toTop}
@@ -124,7 +123,7 @@ const Navbar = () => {
             </span>
           </a>
 
-          {/* ------------------------ DESKTOP LINKS --------------------------- */}
+          {/* DESKTOP LINKS */}
           <div className="hidden items-center gap-8 md:flex lg:gap-10">
             {LINKS.map(({ label, id }) => {
               const isActive = activeId === id;
@@ -134,19 +133,18 @@ const Navbar = () => {
                   href={`#${id}`}
                   onClick={(e) => goTo(e, id)}
                   className={`group relative py-1 text-sm font-medium tracking-wide transition-colors duration-300 ${
-                    isActive ? "text-white" : "text-neutral-400 hover:text-white"
+                    isActive ? "text-white" : "text-neutral-300 hover:text-white"
                   }`}
                 >
                   <span
                     className={`mr-1.5 font-mono text-[9px] align-middle transition-colors duration-300 ${
-                      isActive ? "text-rose-500" : "text-neutral-600 group-hover:text-rose-500/70"
+                      isActive ? "text-rose-500" : "text-rose-500/40 group-hover:text-rose-500/70"
                     }`}
                   >
                     /
                   </span>
                   {label}
 
-                  {/* Active/hover underline */}
                   <span
                     className={`absolute -bottom-0.5 left-0 h-px bg-gradient-to-r from-rose-500 to-orange-400 transition-all duration-300 ${
                       isActive ? "w-full" : "w-0 group-hover:w-full"
@@ -157,7 +155,7 @@ const Navbar = () => {
             })}
           </div>
 
-          {/* --------------------------- DESKTOP CTA → MODAL --------------------------- */}
+          {/* DESKTOP CTA → MODAL */}
           <div className="hidden items-center gap-4 md:flex">
             <div className="hidden items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-1.5 font-mono text-[9px] tracking-widest text-emerald-400 lg:flex">
               <span className="relative flex h-1.5 w-1.5">
@@ -169,17 +167,17 @@ const Navbar = () => {
 
             <button
               onClick={openModal}
-              className="group relative overflow-hidden rounded-full border border-neutral-700/80 bg-neutral-900 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-neutral-200 shadow-lg shadow-black/50 transition-all duration-300 hover:-translate-y-0.5 hover:border-rose-500/60 hover:text-white hover:shadow-rose-500/10"
+              className="group relative overflow-hidden rounded-full border border-rose-500/30 bg-gradient-to-b from-[#1E1725] to-[#151019] px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-rose-100 shadow-lg shadow-rose-950/30 transition-all duration-300 hover:-translate-y-0.5 hover:border-rose-400/60 hover:text-white hover:shadow-rose-500/20"
             >
-              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full skew-x-[-12deg]" />
+              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full skew-x-[-12deg]" />
               <span className="relative">Let&apos;s Talk</span>
             </button>
           </div>
 
-          {/* ------------------------- HAMBURGER (mobile) ---------------------- */}
+          {/* HAMBURGER */}
           <button
             onClick={() => setOpen((v) => !v)}
-            className="relative z-50 p-2 text-neutral-300 transition-colors hover:text-white focus:outline-none md:hidden"
+            className="relative z-50 p-2 text-neutral-200 transition-colors hover:text-white focus:outline-none md:hidden"
             aria-label="Toggle Menu"
             aria-expanded={open}
           >
@@ -204,17 +202,15 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* --------------------- MOBILE OVERLAY (always mounted) --------------------- */}
+      {/* MOBILE OVERLAY */}
       <div
-        className={`fixed inset-0 z-40 flex flex-col items-center justify-center bg-neutral-950/[0.98] px-6 backdrop-blur-3xl transition-all duration-500 md:hidden ${
+        className={`fixed inset-0 z-40 flex flex-col items-center justify-center bg-[#0C0B10]/[0.98] px-6 backdrop-blur-3xl transition-all duration-500 md:hidden ${
           open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         }`}
         aria-hidden={!open}
       >
-        {/* Ambient glow */}
-        <div className="pointer-events-none absolute left-1/2 top-1/3 h-[300px] w-[400px] -translate-x-1/2 rounded-full bg-rose-500/[0.08] blur-[110px]" />
+        <div className="pointer-events-none absolute left-1/2 top-1/3 h-[300px] w-[400px] -translate-x-1/2 rounded-full bg-rose-500/[0.1] blur-[110px]" />
 
-        {/* Links with stagger */}
         {LINKS.map(({ label, id }, i) => (
           <a
             key={id}
@@ -233,7 +229,6 @@ const Navbar = () => {
           </a>
         ))}
 
-        {/* Mobile CTA → MODAL */}
         <div
           className={`mt-10 transition-all duration-500 ${
             open ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
@@ -249,7 +244,6 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Footer note */}
         <div
           className={`absolute bottom-10 font-mono text-[10px] tracking-[0.25em] text-neutral-600 transition-all duration-500 ${
             open ? "opacity-100" : "opacity-0"
@@ -260,7 +254,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* 👇 CONTACT MODAL */}
+      {/* CONTACT MODAL */}
       <ContactModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </>
   );

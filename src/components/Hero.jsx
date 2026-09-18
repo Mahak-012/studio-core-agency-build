@@ -149,7 +149,7 @@ const Hero = () => {
           const dy = pts[i].y - pts[j].y;
           const d = Math.hypot(dx, dy);
           if (d < LINK) {
-            ctx.strokeStyle = `rgba(244,63,94,${(1 - d / LINK) * 0.12})`;
+            ctx.strokeStyle = `rgba(244,63,94,${(1 - d / LINK) * 0.13})`;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(pts[i].x, pts[i].y);
@@ -168,7 +168,7 @@ const Hero = () => {
           pts[i].x += (mouse.x - pts[i].x) * 0.002;
           pts[i].y += (mouse.y - pts[i].y) * 0.002;
         }
-        ctx.fillStyle = "rgba(244,63,94,0.4)";
+        ctx.fillStyle = "rgba(244,63,94,0.45)";
         ctx.beginPath();
         ctx.arc(pts[i].x, pts[i].y, pts[i].r, 0, Math.PI * 2);
         ctx.fill();
@@ -228,11 +228,22 @@ const Hero = () => {
   useEffect(() => magnetize(secondaryRef.current), []);
 
   return (
+    /* ✅ FIX: Section ab FULL WIDTH hai (koi max-w nahi) — black side-bands khatam.
+       Content andar wale wrapper mein max-w-7xl hai. */
     <section
       ref={sectionRef}
-      className="relative overflow-hidden pt-28 pb-16 px-6 mx-auto max-w-7xl flex flex-col items-center text-center"
+      className="hero-bg relative isolate overflow-hidden pt-28 pb-16 px-6"
     >
       <style>{`
+        /* ✨ Deep dark + EK soft top glow — elegant, muddy pink nahi */
+        .hero-bg {
+          background:
+            radial-gradient(ellipse 70% 50% at 50% -10%, rgba(244, 63, 94, 0.13), transparent 60%),
+            radial-gradient(ellipse 45% 40% at 80% 0%, rgba(249, 115, 92, 0.05), transparent 55%),
+            radial-gradient(ellipse 45% 40% at 18% 5%, rgba(168, 85, 140, 0.05), transparent 55%),
+            linear-gradient(to bottom, #131018 0%, #100E15 40%, #0C0B10 75%, #0A0A0B 100%);
+        }
+
         @keyframes rise {
           from { opacity: 0; transform: translateY(26px); filter: blur(10px); }
           to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
@@ -246,16 +257,26 @@ const Hero = () => {
           50%      { transform: translate(-50px, 25px) scale(0.94); }
         }
         @keyframes aurora-a {
-          0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0.75; }
-          50%      { transform: translate(60px, 30px) rotate(8deg) scale(1.15); opacity: 1; }
+          0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0.6; }
+          50%      { transform: translate(50px, 25px) rotate(6deg) scale(1.1); opacity: 0.9; }
         }
         @keyframes aurora-b {
-          0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0.65; }
-          50%      { transform: translate(-70px, -20px) rotate(-6deg) scale(1.1); opacity: 1; }
+          0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0.5; }
+          50%      { transform: translate(-60px, -18px) rotate(-5deg) scale(1.08); opacity: 0.85; }
         }
         @keyframes horizon-pulse {
-          0%, 100% { opacity: 0.55; }
-          50%      { opacity: 1; }
+          0%, 100% { opacity: 0.45; }
+          50%      { opacity: 0.85; }
+        }
+        @keyframes beam-sweep {
+          0%   { transform: translateX(-60%) translateY(-60%) rotate(20deg); }
+          100% { transform: translateX(60%)  translateY(60%)  rotate(20deg); }
+        }
+        @keyframes shoot {
+          0%   { transform: translate(0, 0) rotate(-35deg); opacity: 0; }
+          5%   { opacity: 0.9; }
+          35%  { opacity: 0.9; }
+          100% { transform: translate(-420px, 240px) rotate(-35deg); opacity: 0; }
         }
         @keyframes float-y {
           0%, 100% { transform: translateY(0); }
@@ -277,16 +298,6 @@ const Hero = () => {
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         @keyframes marquee { to { transform: translateX(-50%); } }
 
-        /* ✨ AMBIENT BASE — pure black ki jagah warm lit gradient */
-        .hero-ambient {
-          background:
-            radial-gradient(ellipse 95% 60% at 50% -15%, rgba(244, 63, 94, 0.16), transparent 62%),
-            radial-gradient(ellipse 55% 45% at 85% 12%, rgba(249, 115, 92, 0.09), transparent 55%),
-            radial-gradient(ellipse 60% 50% at 10% 30%, rgba(192, 78, 158, 0.09), transparent 60%),
-            radial-gradient(ellipse 70% 45% at 50% 110%, rgba(147, 51, 234, 0.07), transparent 65%),
-            linear-gradient(to bottom, #191321 0%, #121017 45%, #0D0D11 80%, #0A0A0B 100%);
-        }
-
         .reveal      { opacity: 0; animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
         .word-rotate { display: inline-block; transform-origin: bottom; animation: word-in 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
         .grad-text   { background-size: 200% auto; animation: gradient-pan 6s ease infinite; }
@@ -298,8 +309,8 @@ const Hero = () => {
         }
         .spotlight {
           background: radial-gradient(
-            560px circle at var(--spot-x, 50%) var(--spot-y, 30%),
-            rgba(244, 63, 94, 0.13),
+            520px circle at var(--spot-x, 50%) var(--spot-y, 30%),
+            rgba(244, 63, 94, 0.08),
             transparent 65%
           );
         }
@@ -314,81 +325,110 @@ const Hero = () => {
         @media (prefers-reduced-motion: reduce) {
           .reveal, .word-rotate, .grad-text, .type-cursor, .marquee { animation: none !important; opacity: 1 !important; }
           .parallax-a, .parallax-b { transform: none !important; }
-          .aurora-a, .aurora-b, .horizon-glow { animation: none !important; }
+          .aurora-a, .aurora-b, .horizon-glow, .beam-layer, .shooting-star { animation: none !important; }
         }
       `}</style>
 
-      {/* ======================= LIGHTING SYSTEM (sab se pehle) ======================= */}
+      {/* ═══════════ BACKGROUND — FULL WIDTH, EK wrapper mein ═══════════ */}
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
 
-      {/* ✨ LAYER 0: Ambient base — warm lit gradient, black screen khatam */}
-      <div className="hero-ambient absolute inset-0 -z-30 pointer-events-none" />
+        {/* Soft aurora blobs — SUBTLE, muddy nahi */}
+        <div
+          className="aurora-a absolute -top-40 left-[10%] h-[380px] w-[560px] rounded-full bg-rose-500/[0.13] blur-[120px]"
+          style={{ animation: REDUCED_MOTION ? "none" : "aurora-a 18s ease-in-out infinite" }}
+        />
+        <div
+          className="aurora-b absolute -top-32 right-[6%] h-[340px] w-[500px] rounded-full bg-fuchsia-500/[0.1] blur-[130px]"
+          style={{ animation: REDUCED_MOTION ? "none" : "aurora-b 22s ease-in-out infinite" }}
+        />
+        <div
+          className="aurora-a absolute top-[35%] left-[28%] h-[300px] w-[440px] rounded-full bg-orange-400/[0.07] blur-[140px]"
+          style={{ animation: REDUCED_MOTION ? "none" : "aurora-b 26s ease-in-out infinite reverse" }}
+        />
 
-      {/* ✨ LAYER 1: Aurora blobs — cinematic rose/purple/orange color wash */}
-      <div className="absolute inset-0 -z-20 overflow-hidden pointer-events-none">
+        {/* Horizon glow — headline ke peeche, soft */}
         <div
-          className="aurora-a absolute -top-32 left-[6%] h-[400px] w-[560px] rounded-full bg-rose-500/25 blur-[110px]"
-          style={{ animation: REDUCED_MOTION ? "none" : "aurora-a 16s ease-in-out infinite" }}
+          className="horizon-glow absolute top-[4%] left-1/2 h-[280px] w-[720px] -translate-x-1/2"
+          style={{
+            animation: REDUCED_MOTION ? "none" : "horizon-pulse 9s ease-in-out infinite",
+            background:
+              "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(251,113,133,0.1), transparent 70%)",
+          }}
         />
+
+        {/* Beam sweep — halke se, har 14s mein ek baar */}
+        {!REDUCED_MOTION && (
+          <div className="beam-layer absolute inset-[-50%]">
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(100deg, transparent 45%, rgba(255,255,255,0.025) 50%, transparent 55%)",
+                animation: "beam-sweep 14s linear infinite",
+              }}
+            />
+          </div>
+        )}
+
+        {/* Shooting stars — kam frequent, subtle */}
+        {!REDUCED_MOTION && (
+          <>
+            <span
+              className="shooting-star absolute top-[12%] right-[16%] h-px w-[110px] rounded-full"
+              style={{
+                background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent)",
+                animation: "shoot 11s ease-in 3s infinite",
+              }}
+            />
+            <span
+              className="shooting-star absolute top-[26%] left-[10%] h-px w-[80px] rounded-full"
+              style={{
+                background: "linear-gradient(90deg, transparent, rgba(251,146,60,0.5), transparent)",
+                animation: "shoot 15s ease-in 8s infinite",
+              }}
+            />
+          </>
+        )}
+
+        {/* Particle constellation */}
+        <canvas
+          ref={canvasRef}
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full [mask-image:radial-gradient(ellipse_70%_65%_at_50%_40%,black,transparent)]"
+        />
+
+        {/* Grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:radial-gradient(ellipse_65%_60%_at_50%_35%,black,transparent)]" />
+
+        {/* Film grain */}
         <div
-          className="aurora-b absolute -top-24 right-[4%] h-[360px] w-[500px] rounded-full bg-fuchsia-500/20 blur-[120px]"
-          style={{ animation: REDUCED_MOTION ? "none" : "aurora-b 20s ease-in-out infinite" }}
+          className="absolute inset-0 opacity-[0.035]"
+          style={{
+            backgroundImage:
+              `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          }}
         />
-        <div
-          className="aurora-a absolute top-[32%] left-[30%] h-[320px] w-[460px] rounded-full bg-orange-400/15 blur-[130px]"
-          style={{ animation: REDUCED_MOTION ? "none" : "aurora-b 24s ease-in-out infinite reverse" }}
-        />
+
+        {/* Drifting orbs (parallax) — subtle */}
+        <div className="parallax-a absolute inset-0">
+          <div className="absolute top-[-140px] left-1/2 -translate-x-1/2 h-[420px] w-[680px] rounded-full bg-rose-500/[0.11] blur-[140px]" style={{ animation: REDUCED_MOTION ? "none" : "drift 16s ease-in-out infinite" }} />
+          <div className="absolute top-[30%] right-[-160px] h-[300px] w-[300px] rounded-full bg-orange-500/[0.08] blur-[120px]" style={{ animation: REDUCED_MOTION ? "none" : "drift-alt 20s ease-in-out infinite" }} />
+          <div className="absolute bottom-[-100px] left-[-140px] h-[280px] w-[280px] rounded-full bg-fuchsia-500/[0.08] blur-[110px]" style={{ animation: REDUCED_MOTION ? "none" : "drift 22s ease-in-out infinite" }} />
+        </div>
+
+        {/* Cursor spotlight */}
+        <div className="spotlight absolute inset-0" />
       </div>
 
-      {/* ✨ LAYER 2: Horizon glow — headline ke peeche rising warm light */}
-      <div
-        className="horizon-glow absolute top-[6%] left-1/2 -z-20 h-[300px] w-[780px] -translate-x-1/2 pointer-events-none"
-        style={{
-          animation: REDUCED_MOTION ? "none" : "horizon-pulse 8s ease-in-out infinite",
-          background:
-            "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(251,113,133,0.2), transparent 70%)",
-        }}
-      />
+      {/* Bottom fade — next section mein smooth merge */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-40 bg-gradient-to-b from-transparent to-[#0A0A0B]" />
 
-      {/* Particle constellation */}
-      <canvas
-        ref={canvasRef}
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-20 h-full w-full [mask-image:radial-gradient(ellipse_70%_65%_at_50%_40%,black,transparent)]"
-      />
-
-      {/* Grid — thori bright */}
-      <div className="absolute inset-0 -z-20 pointer-events-none bg-[linear-gradient(to_right,rgba(255,255,255,0.055)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.055)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:radial-gradient(ellipse_65%_60%_at_50%_35%,black,transparent)]" />
-
-      {/* Film grain */}
-      <div
-        className="absolute inset-0 -z-20 opacity-[0.04] pointer-events-none"
-        style={{
-          backgroundImage:
-            `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-        }}
-      />
-
-      {/* Drifting orbs — brighter */}
-      <div className="parallax-a absolute inset-0 -z-10 pointer-events-none">
-        <div className="absolute top-[-120px] left-1/2 -translate-x-1/2 h-[440px] w-[700px] rounded-full bg-rose-500/20 blur-[130px]" style={{ animation: REDUCED_MOTION ? "none" : "drift 14s ease-in-out infinite" }} />
-        <div className="absolute top-[30%] right-[-140px] h-[320px] w-[320px] rounded-full bg-orange-500/15 blur-[110px]" style={{ animation: REDUCED_MOTION ? "none" : "drift-alt 18s ease-in-out infinite" }} />
-        <div className="absolute bottom-[-80px] left-[-120px] h-[280px] w-[280px] rounded-full bg-fuchsia-500/15 blur-[100px]" style={{ animation: REDUCED_MOTION ? "none" : "drift 20s ease-in-out infinite" }} />
-      </div>
-
-      {/* Cursor spotlight — stronger */}
-      <div className="spotlight absolute inset-0 -z-10 pointer-events-none" />
-
-      {/* ✨ Bottom fade — hero ko next section mein smoothly merge karta hai */}
-      <div className="absolute inset-x-0 bottom-0 -z-10 h-40 pointer-events-none bg-gradient-to-b from-transparent to-neutral-950" />
-
-      {/* ======================= CONTENT ======================= */}
-
-      {/* Floating tech chips */}
-      <div className="parallax-b absolute inset-0 hidden lg:block pointer-events-none">
+      {/* ═══════════ FLOATING CHIPS ═══════════ */}
+      <div className="parallax-b pointer-events-none absolute inset-0 z-[1] hidden lg:block max-w-7xl mx-auto left-0 right-0">
         {FLOATING_CHIPS.map((chip) => (
           <div
             key={chip.label}
-            className={`absolute inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-neutral-700/70 bg-neutral-900/70 backdrop-blur-md text-[11px] font-medium text-neutral-300 shadow-lg shadow-black/30 ${chip.className}`}
+            className={`absolute inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-neutral-800/80 bg-neutral-900/60 backdrop-blur-md text-[11px] font-medium text-neutral-400 shadow-lg shadow-black/30 ${chip.className}`}
             style={{ animation: REDUCED_MOTION ? "none" : `float-y 6s ease-in-out ${chip.delay} infinite` }}
           >
             <span className="h-1 w-1 rounded-full bg-rose-400" />
@@ -397,102 +437,106 @@ const Hero = () => {
         ))}
       </div>
 
-      {/* Terminal typing line */}
-      <div className="reveal mb-6 inline-flex items-center gap-2 rounded-lg border border-neutral-700/60 bg-neutral-950/70 px-4 py-2 font-mono text-[11px] text-neutral-400 backdrop-blur-sm sm:text-xs" style={{ animationDelay: "0s" }}>
-        <span className="text-rose-500">$</span>
-        <span className="text-neutral-300">{typed}</span>
-        <span className="type-cursor inline-block h-3.5 w-[7px] translate-y-[2px] bg-rose-500/80" />
-      </div>
+      {/* ═══════════ CONTENT — max-w-7xl yahan hai ═══════════ */}
+      <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-center text-center">
 
-      {/* Badge */}
-      <div className="reveal group relative mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-700/70 bg-neutral-900/70 px-4 py-1.5 text-xs text-neutral-200 backdrop-blur-sm" style={{ animationDelay: "0.05s" }}>
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-60" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500" />
-        </span>
-        Production-Ready Engineering
-        <span className="text-neutral-500 transition-colors group-hover:text-neutral-300">→</span>
-      </div>
+        {/* Terminal typing line */}
+        <div className="reveal mb-6 inline-flex items-center gap-2 rounded-lg border border-neutral-800/70 bg-neutral-950/60 px-4 py-2 font-mono text-[11px] text-neutral-400 backdrop-blur-sm sm:text-xs" style={{ animationDelay: "0s" }}>
+          <span className="text-rose-500">$</span>
+          <span className="text-neutral-300">{typed}</span>
+          <span className="type-cursor inline-block h-3.5 w-[7px] translate-y-[2px] bg-rose-500/80" />
+        </div>
 
-      {/* Headline */}
-      <h1 className="max-w-4xl text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-7xl">
-        <span className="sr-only">We Engineer High-Impact Digital Ecosystems.</span>
-        <span aria-hidden="true">
-          <span className="reveal inline-block" style={{ animationDelay: "0.15s" }}>We Engineer</span>{" "}
-          <span className="reveal inline-block" style={{ animationDelay: "0.25s" }}>High-Impact</span>
-          <br />
-          <span className="reveal inline-block pb-2" style={{ animationDelay: "0.35s", perspective: "500px" }}>
-            <span key={wordIndex} className="word-rotate grad-text inline-block bg-gradient-to-r from-rose-400 via-orange-300 to-rose-400 bg-clip-text text-transparent">
-              {WORDS[wordIndex]}
+        {/* Badge */}
+        <div className="reveal group relative mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-800/70 bg-neutral-950/60 px-4 py-1.5 text-xs text-neutral-300 backdrop-blur-sm" style={{ animationDelay: "0.05s" }}>
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500" />
+          </span>
+          Production-Ready Engineering
+          <span className="text-neutral-500 transition-colors group-hover:text-neutral-300">→</span>
+        </div>
+
+        {/* Headline */}
+        <h1 className="max-w-4xl text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-7xl">
+          <span className="sr-only">We Engineer High-Impact Digital Ecosystems.</span>
+          <span aria-hidden="true">
+            <span className="reveal inline-block" style={{ animationDelay: "0.15s" }}>We Engineer</span>{" "}
+            <span className="reveal inline-block" style={{ animationDelay: "0.25s" }}>High-Impact</span>
+            <br />
+            <span className="reveal inline-block pb-2" style={{ animationDelay: "0.35s", perspective: "500px" }}>
+              <span key={wordIndex} className="word-rotate grad-text inline-block bg-gradient-to-r from-rose-400 via-orange-300 to-rose-400 bg-clip-text text-transparent">
+                {WORDS[wordIndex]}
+              </span>
             </span>
           </span>
-        </span>
-      </h1>
+        </h1>
 
-      {/* Sub-copy */}
-      <p className="reveal mt-7 max-w-2xl text-base font-light leading-relaxed text-neutral-300 sm:text-lg" style={{ animationDelay: "0.45s" }}>
-        Translating premium design concepts into pixel-perfect, hyper-fast frontend deployments. We bridge the gap between{" "}
-        <span className="text-white">creative art direction</span> and{" "}
-        <span className="text-white">flawless codebase execution</span>.
-      </p>
+        {/* Sub-copy */}
+        <p className="reveal mt-7 max-w-2xl text-base font-light leading-relaxed text-neutral-400 sm:text-lg" style={{ animationDelay: "0.45s" }}>
+          Translating premium design concepts into pixel-perfect, hyper-fast frontend deployments. We bridge the gap between{" "}
+          <span className="text-white">creative art direction</span> and{" "}
+          <span className="text-white">flawless codebase execution</span>.
+        </p>
 
-      {/* CTAs — magnetic */}
-      <div className="reveal mt-10 flex flex-col items-center gap-4 sm:flex-row" style={{ animationDelay: "0.55s" }}>
-        <a
-          ref={primaryRef}
-          href="#contact"
-          className="group relative w-full overflow-hidden rounded-xl bg-rose-600 px-7 py-3.5 text-sm font-semibold text-white shadow-xl shadow-rose-600/40 ring-1 ring-rose-400/30 transition-colors duration-300 hover:bg-rose-500 sm:w-auto"
-        >
-          <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full skew-x-[-20deg]" />
-          <span className="relative">Deploy Active Backlog</span>
-        </a>
-        <a
-          ref={secondaryRef}
-          href="#showcase"
-          className="group w-full rounded-xl border border-neutral-700 bg-neutral-900/80 px-7 py-3.5 text-sm font-semibold text-neutral-200 backdrop-blur-sm transition-colors duration-300 hover:border-neutral-500 hover:bg-neutral-800 sm:w-auto"
-        >
-          Audit Case Studies
-          <span className="ml-1.5 inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
-        </a>
-      </div>
+        {/* CTAs — magnetic */}
+        <div className="reveal mt-10 flex flex-col items-center gap-4 sm:flex-row" style={{ animationDelay: "0.55s" }}>
+          <a
+            ref={primaryRef}
+            href="#contact"
+            className="group relative w-full overflow-hidden rounded-xl bg-rose-600 px-7 py-3.5 text-sm font-semibold text-white shadow-xl shadow-rose-600/30 ring-1 ring-rose-400/25 transition-colors duration-300 hover:bg-rose-500 sm:w-auto"
+          >
+            <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full skew-x-[-20deg]" />
+            <span className="relative">Deploy Active Backlog</span>
+          </a>
+          <a
+            ref={secondaryRef}
+            href="#showcase"
+            className="group w-full rounded-xl border border-neutral-800 bg-neutral-900/70 px-7 py-3.5 text-sm font-semibold text-neutral-300 backdrop-blur-sm transition-colors duration-300 hover:border-neutral-600 hover:bg-neutral-800/80 sm:w-auto"
+          >
+            Audit Case Studies
+            <span className="ml-1.5 inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
+          </a>
+        </div>
 
-      {/* Stats — count-up */}
-      <div className="reveal mt-16 grid w-full max-w-xl grid-cols-3 gap-4 sm:gap-10 sm:divide-x sm:divide-neutral-700/60" style={{ animationDelay: "0.65s" }}>
-        {STATS.map((stat) => (
-          <div key={stat.label}>
-            <div className="bg-gradient-to-b from-white to-neutral-300 bg-clip-text text-2xl font-bold text-transparent sm:text-3xl">
-              <CountUp value={stat.value} />
+        {/* Stats — count-up */}
+        <div className="reveal mt-16 grid w-full max-w-xl grid-cols-3 gap-4 sm:gap-10 sm:divide-x sm:divide-neutral-800/60" style={{ animationDelay: "0.65s" }}>
+          {STATS.map((stat) => (
+            <div key={stat.label}>
+              <div className="bg-gradient-to-b from-white to-neutral-400 bg-clip-text text-2xl font-bold text-transparent sm:text-3xl">
+                <CountUp value={stat.value} />
+              </div>
+              <div className="mt-1 text-[11px] uppercase tracking-widest text-neutral-500 sm:text-xs">
+                {stat.label}
+              </div>
             </div>
-            <div className="mt-1 text-[11px] uppercase tracking-widest text-neutral-400 sm:text-xs">
-              {stat.label}
+          ))}
+        </div>
+
+        {/* Trusted-by marquee */}
+        <div className="reveal mt-14 w-full max-w-3xl" style={{ animationDelay: "0.75s" }}>
+          <div className="mb-4 font-mono text-[10px] tracking-[0.3em] text-neutral-600">
+            TRUSTED BY FAST-MOVING TEAMS
+          </div>
+          <div className="marquee-mask overflow-hidden">
+            <div className="marquee flex w-max items-center gap-8 whitespace-nowrap">
+              {[...TRUSTED, ...TRUSTED].map((name, i) => (
+                <React.Fragment key={i}>
+                  <span className="text-sm font-bold tracking-[0.2em] text-neutral-600 transition-colors duration-300 hover:text-neutral-300">
+                    {name}
+                  </span>
+                  <span className="text-[10px] text-rose-400/40">//</span>
+                </React.Fragment>
+              ))}
             </div>
           </div>
-        ))}
-      </div>
-
-      {/* Trusted-by marquee */}
-      <div className="reveal mt-14 w-full max-w-3xl" style={{ animationDelay: "0.75s" }}>
-        <div className="mb-4 font-mono text-[10px] tracking-[0.3em] text-neutral-500">
-          TRUSTED BY FAST-MOVING TEAMS
         </div>
-        <div className="marquee-mask overflow-hidden">
-          <div className="marquee flex w-max items-center gap-8 whitespace-nowrap">
-            {[...TRUSTED, ...TRUSTED].map((name, i) => (
-              <React.Fragment key={i}>
-                <span className="text-sm font-bold tracking-[0.2em] text-neutral-500 transition-colors duration-300 hover:text-neutral-200">
-                  {name}
-                </span>
-                <span className="text-[10px] text-rose-400/50">//</span>
-              </React.Fragment>
-            ))}
+
+        {/* Scroll cue */}
+        <div className="reveal mt-14 flex flex-col items-center" style={{ animationDelay: "0.85s" }}>
+          <div className="flex h-9 w-6 justify-center rounded-full border border-neutral-700 pt-2">
+            <span className="h-1.5 w-1 rounded-full bg-neutral-500" style={{ animation: REDUCED_MOTION ? "none" : "wheel 1.8s ease-in-out infinite" }} />
           </div>
-        </div>
-      </div>
-
-      {/* Scroll cue */}
-      <div className="reveal mt-14 flex flex-col items-center" style={{ animationDelay: "0.85s" }}>
-        <div className="flex h-9 w-6 justify-center rounded-full border border-neutral-600 pt-2">
-          <span className="h-1.5 w-1 rounded-full bg-neutral-400" style={{ animation: REDUCED_MOTION ? "none" : "wheel 1.8s ease-in-out infinite" }} />
         </div>
       </div>
     </section>
